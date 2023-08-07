@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment | ecommerce API</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap');
+
+        :root {
+            --primary-color: #08647d;
+            --secondary-color: #2fd3a2;
+            --gray: #4a4a4d;
+            --bg-primary: #ecf0f3;
+        }
+
+        * {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        header, body {
+            background-color: var(--bg-primary);
+        }
+
+        header nav{
+            width: 100%;
+            background: #fff;
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #ccc;
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 20px;
+        }
+
+        .container {
+            max-width: 100%;
+            padding: 1rem 2rem;
+            display: grid;
+            grid-template-columns: 1.5fr 0.75fr;
+            justify-content: center;
+            align-items: center;
+        }
+
+        iframe {
+            width: 1100px;
+            height: 635px;
+            margin: 10px auto;
+        }
+
+        input {
+            display: block;
+            padding: 5px;
+            border: none;
+            border-radius: 5px;
+            margin: 3px;
+            width: 250px;
+            font-size: 13px;
+        }
+
+        input:focus {
+            outline: none;
+        }
+        .form-container{ 
+            display: grid;
+            grid-template-rows: 0.25fr 1fr;
+            row-gap: 2rem;
+            justify-content: center;
+            align-items: center;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 12px;
+            margin-top: 1.5rem;
+            width: 120px;
+        }
+
+        button:hover {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="#">Payment | E-commerce API</a>
+        </nav>
+    </header>
+    <main>
+        <div class="container">
+            <iframe src="{{ card_iframe_url }}" frameborder="0" scrolling="no" allow="payment" allowtransparency="true"></iframe>
+                <div class="form-container">
+                    <div class="images-hr">
+                        <h3>Or pay by mobile wallet</h3>
+                    </div>
+                    <form action="{% url 'payment:pay-by-mob' %}" method="post">
+                        {% csrf_token %}
+                        <input type="text" name="phone" id="phone" placeholder="Enter Your Phone Number...">
+                        <input type="hidden" name="token" value="{{ token }}">
+                        <button type="submit">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+</body>
+
+</html>
