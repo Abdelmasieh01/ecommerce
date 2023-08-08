@@ -111,7 +111,7 @@ def request_payment_key(order: Order):
             "state": "NA"
         },
         'currency': 'EGP',
-        'integration_id': 4075698,
+        'integration_id': 4075697,
         "lock_order_when_paid": "false"  # false for now
     }
 
