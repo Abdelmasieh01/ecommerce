@@ -52,7 +52,7 @@ def get_token() -> str:
         content = json.loads(response.content.decode())
         return content['token']
     else:
-        return redirect('/')
+        return redirect('/orders/')
     # print(content['token'])
 
 
@@ -82,7 +82,7 @@ def register_order(order: Order):
         content = json.loads(response.content.decode())
         return token, content['id']
     else:
-        return redirect('/')
+        return redirect('/orders/')
 
 
 def request_payment_key(order: Order):
@@ -121,4 +121,4 @@ def request_payment_key(order: Order):
         content = json.loads(response.content.decode())
         return content['token']
     else:
-        return redirect('/')
+        return redirect('/orders/')
