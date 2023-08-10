@@ -15,9 +15,19 @@ class Item(models.Model):
         return f'Item: {self.title} | Sold By: {self.seller.username}'
 
 class Order(models.Model):
+    UNPAID = 0
+    PAID = 1
+    FAILED = 2
+    CHOICES = [
+        (UNPAID, 'Unpaid'),
+        (PAID, 'Paid'),
+        (FAILED, 'Failed'),
+    ]
+
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     item_count = models.PositiveSmallIntegerField()
+    status = models.PositiveSmallIntegerField(choices=CHOICES, default=0)
     
     @property
     def total_price(self):

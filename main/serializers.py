@@ -16,7 +16,7 @@ class ItemDetailSerializer(serializers.ModelSerializer):
     seller = serializers.CharField(source='user.username', read_only=True)
     class Meta:
         model = Item
-        fields = '__all__'
+        fields = ('id', 'title', 'description', 'price', 'seller', 'image')
 
 class ItemListSerializer(serializers.ModelSerializer):
     seller = serializers.CharField(source='seller.username', read_only=True)
@@ -27,6 +27,8 @@ class ItemListSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     item = ItemListSerializer()
     user = UserSerializer()
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+
     class Meta:
         model = Order
-        fields = ('item', 'user', 'item_count', 'total_price')
+        fields = ('id','item', 'user', 'item_count', 'total_price', 'status', 'status_display')

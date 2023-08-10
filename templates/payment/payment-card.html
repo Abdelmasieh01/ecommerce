@@ -21,11 +21,13 @@
             padding: 0;
             box-sizing: border-box;
         }
-        header, body {
+
+        header,
+        body {
             background-color: var(--bg-primary);
         }
 
-        header nav{
+        header nav {
             width: 100%;
             background: #fff;
             padding: 15px;
@@ -44,7 +46,6 @@
             max-width: 100%;
             padding: 1rem 2rem;
             display: grid;
-            grid-template-columns: 1.5fr 0.75fr;
             justify-content: center;
             align-items: center;
         }
@@ -68,7 +69,8 @@
         input:focus {
             outline: none;
         }
-        .form-container{ 
+
+        .form-container {
             display: grid;
             grid-template-rows: 0.25fr 1fr;
             row-gap: 2rem;
@@ -101,20 +103,10 @@
     </header>
     <main>
         <div class="container">
-            <iframe src="{{ card_iframe_url }}" frameborder="0" scrolling="no" allow="payment" allowtransparency="true"></iframe>
-                <div class="form-container">
-                    <div class="images-hr">
-                        <h3>Or pay by mobile wallet</h3>
-                    </div>
-                    <form action="{% url 'payment:pay-by-mob' %}" method="post">
-                        {% csrf_token %}
-                        <input type="text" name="phone" id="phone" placeholder="Enter Your Phone Number...">
-                        <input type="hidden" name="token" value="{{ token }}">
-                        <button type="submit">Submit</button>
-                    </form>
-                </div>
-            </div>
-        </main>
+            <iframe src="{{ card_iframe_url }}" frameborder="0" scrolling="no" allow="payment"
+                allowtransparency="true"></iframe>
+        </div>
+    </main>
 </body>
 
 </html>

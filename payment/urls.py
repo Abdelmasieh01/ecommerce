@@ -4,6 +4,8 @@ from . import views
 app_name = 'payment'
 
 urlpatterns = [
-    path('initiate/<int:id>/', views.initiate_payment, name='initiate-payment'),
-    path('initiate/pay-by-mob/', views.pay_by_mob, name='pay-by-mob'),
+    path('choose-payment/<int:id>/', views.choose_payment, name='choose-payment'),
+    path('pay-by-card/<int:id>/', views.initiate_payment_card, name='initiate-payment-card'),
+    path('pay-by-mob/<int:id>/', views.initiate_payment_mob, name='initiate-payment-mob'),
+    path('error/', views.payment_error, name='error'),
 ]   

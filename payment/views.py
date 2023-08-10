@@ -6,38 +6,60 @@ import requests
 from main.models import Order, Item
 
 # Create your views here.
-
-
 @login_required()
-def initiate_payment(request, id):
+def choose_payment(request, id):
+    # if request.method == 'POST':
+    #     method = request.POST.get('type', 'card')
+    #     if method == 'card':
+    #         return redirect('payment:initiate-payment-card', id=id)
+    #     elif method == 'phone':
+    #         return redirect('payment:initiate-payment-mob', id=id)
+    return render(request, 'payment/choose.html', {'id': id})
+
+def initiate_payment_card(request, id):
+    '''
+    Gives the user an iframe to pay for the order
+    '''
+    CARD_INTEGRATION_ID = 4075697
     order = get_object_or_404(Order, pk=id)
     if order.user != request.user:
-        return redirect('/')
-    payment_key = request_payment_key(order)
+        return redirect('payment:error')
+    payment_key = request_payment_key(order, CARD_INTEGRATION_ID)
     card_iframe_url = f'https://accept.paymob.com/api/acceptance/iframes/778662?payment_token={payment_key}'
-    return render(request, 'payment/payment.html', {'card_iframe_url': card_iframe_url, 'token': payment_key})
+    return render(request, 'payment/payment-card.html', {'card_iframe_url': card_iframe_url})
 
-
-def pay_by_mob(request):
-    if request.method == 'GET':
-        return redirect('/')
-    phone = request.POST.get('phone')
-    token = request.POST.get('token')
+def initiate_payment_mob(request, id):
+    '''
+    Redirects the user to the url to pay from their mobile wallet
+    '''
+    if request.method == 'POST':
+        WALLET_INTEGRATION_ID = 4082739
+        order = get_object_or_404(Order, pk=id)
+        if order.user != request.user:
+            return redirect('payment:error')
+        phone = request.POST.get('phone')
+        token = request_payment_key(order, WALLET_INTEGRATION_ID)
     
-    json_body = {
-        "source": {
-            "identifier": "wallet mobile number",
-            "subtype": "WALLET"
-        },
-        "payment_token": token
-    }
-    response = requests.post('https://accept.paymob.com/api/acceptance/payments/pay', json=json_body)
+        json_body = {
+            "source": {
+                "identifier": phone,
+                "subtype": "WALLET"
+            },
+            "payment_token": token
+        }
+        response = requests.post('https://accept.paymob.com/api/acceptance/payments/pay', json=json_body)
 
-    content = json.loads(response.content.decode())
-    print(content)
-    return redirect(content['redirection_url'])
-    #else:
-        #return redirect('/error/')
+        if response.status_code == 201:
+            content = json.loads(response.content.decode())
+            return redirect(content.get('redirect_url', 'payment:error'))
+        else:
+            return redirect('payment:error')
+    return render(request, 'payment/payment-mobile.html', ) 
+
+def payment_error(request):
+    return render(request, 'payment/payment-error.html', )
+
+
 
 def get_token() -> str:
     '''
@@ -52,7 +74,7 @@ def get_token() -> str:
         content = json.loads(response.content.decode())
         return content['token']
     else:
-        return redirect('/orders/')
+        return redirect('payment:error')
     # print(content['token'])
 
 
@@ -82,10 +104,10 @@ def register_order(order: Order):
         content = json.loads(response.content.decode())
         return token, content['id']
     else:
-        return redirect('/orders/')
+        return redirect('payment:error')
 
 
-def request_payment_key(order: Order):
+def request_payment_key(order: Order, integration_id: int):
     '''
     Makes a request to have the final token required for payment
     '''
@@ -111,7 +133,7 @@ def request_payment_key(order: Order):
             "state": "NA"
         },
         'currency': 'EGP',
-        'integration_id': 4075697,
+        'integration_id': integration_id,
         "lock_order_when_paid": "false"  # false for now
     }
 
@@ -121,4 +143,4 @@ def request_payment_key(order: Order):
         content = json.loads(response.content.decode())
         return content['token']
     else:
-        return redirect('/orders/')
+        return redirect('payment:error')

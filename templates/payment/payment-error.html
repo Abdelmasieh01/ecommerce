@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error</title>
+    <!-- Font awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Font awesome -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background: #fff;
+        }
+
+        .error {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            margin: 10px;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .error i {
+            color: red;
+            font-size: 100px;
+        }
+
+        .error a {
+            color: #fff;
+            padding: 10px 20px;
+            background: #39ac31;
+            margin: 20px 0;
+            font-size: 20px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="error">
+        <i class="fa-solid fa-circle-xmark"></i>
+        <h1>An error happened while processing your payment!</h1>
+        <h2>Please, try again later.</h2>
+        <a href="/">Return Home</a>
+    </div>
+</body>
+
+</html>
