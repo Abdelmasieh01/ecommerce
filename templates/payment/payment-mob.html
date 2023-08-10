@@ -42,18 +42,15 @@
             font-size: 20px;
         }
 
-        .container {
+        .container,
+        form {
+            margin-top: 3rem;
             max-width: 100%;
             padding: 1rem 2rem;
             display: grid;
+            gap: 1rem;
             justify-content: center;
             align-items: center;
-        }
-
-        iframe {
-            width: 1100px;
-            height: 635px;
-            margin: 10px auto;
         }
 
         input {
@@ -98,13 +95,17 @@
 <body>
     <header>
         <nav>
-            <a href="#">Card Payment | E-commerce API</a>
+            <a href="#">Mobile Wallet Payment | E-commerce API</a>
         </nav>
     </header>
     <main>
         <div class="container">
-            <iframe src="{{ card_iframe_url }}" frameborder="0" scrolling="no" allow="payment"
-                allowtransparency="true"></iframe>
+            <form method="POST">
+                {% csrf_token %}
+                <label for="phone">Enter your phone number to get redirected to your wallet url</label>
+                <input type="text" name="phone" placeholder="Enter Your Phone Number...">
+                <button type="submit">Redirect Me</button>
+            </form>
         </div>
     </main>
 </body>

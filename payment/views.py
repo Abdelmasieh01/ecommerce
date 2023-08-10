@@ -56,7 +56,7 @@ def initiate_payment_mob(request, id):
             return redirect(content.get('redirect_url', 'payment:error'))
         else:
             return redirect('payment:error')
-    return render(request, 'payment/payment-mobile.html', ) 
+    return render(request, 'payment/payment-mob.html', ) 
 
 def payment_error(request):
     return render(request, 'payment/payment-error.html', )
