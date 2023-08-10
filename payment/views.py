@@ -51,9 +51,12 @@ def initiate_payment_mob(request, id):
         }
         response = requests.post('https://accept.paymob.com/api/acceptance/payments/pay', json=json_body)
 
-        if response.status_code == 201:
+        if response.status_code == 200:
             content = json.loads(response.content.decode())
-            return redirect(content.get('redirect_url', 'payment:error'))
+            try: 
+                return redirect(content.get('redirect_url'))
+            except:
+                return redirect('payment:error')
         else:
             return redirect('payment:error')
     return render(request, 'payment/payment-mob.html', ) 

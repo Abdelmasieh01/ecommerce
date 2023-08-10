@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
 class ItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
-        fields = '__all__'
+        fields = ('id', 'title', 'description', 'price', 'image')
 
 class ItemDetailSerializer(serializers.ModelSerializer):
     seller = serializers.CharField(source='user.username', read_only=True)
