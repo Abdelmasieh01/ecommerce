@@ -66,8 +66,8 @@
 <body>
     <h2>Please, choose how to pay for your order.</h2>
     <div class="container">
-        <a href="{% url 'payment:initiate-payment-card' {{ id }} %}">Pay By Card</a>
-        <a href="{% url 'payment:initiate-payment-mob' {{ id }} %}">Pay By Mobile Wallet</a>
+        <a href="{% url 'payment:initiate-payment-card' id %}">Pay By Card</a>
+        <a href="{% url 'payment:initiate-payment-mob' id %}">Pay By Mobile Wallet</a>
     </div>
 </body>
 </html>
