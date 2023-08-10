@@ -16,6 +16,7 @@ def choose_payment(request, id):
     #         return redirect('payment:initiate-payment-mob', id=id)
     return render(request, 'payment/choose.html', {'id': id})
 
+@login_required()
 def initiate_payment_card(request, id):
     '''
     Gives the user an iframe to pay for the order
@@ -28,6 +29,7 @@ def initiate_payment_card(request, id):
     card_iframe_url = f'https://accept.paymob.com/api/acceptance/iframes/778662?payment_token={payment_key}'
     return render(request, 'payment/payment-card.html', {'card_iframe_url': card_iframe_url})
 
+@login_required()
 def initiate_payment_mob(request, id):
     '''
     Redirects the user to the url to pay from their mobile wallet
