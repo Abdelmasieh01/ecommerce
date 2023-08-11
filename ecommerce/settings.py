@@ -152,6 +152,7 @@ LOGIN_URL = '/auth/login/'
 
 #Paymob Payment keys
 PAYMOB_API_KEY = config('PAYMOB_API_KEY')
+HMAC_KEY = config('HMAC')
 
 #CSRF Setting
 CSRF_TRUSTED_ORIGINS = ['https://ecommerce-dj.onrender.com/']

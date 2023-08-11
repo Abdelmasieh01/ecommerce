@@ -28,7 +28,8 @@ class Order(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     item_count = models.PositiveSmallIntegerField()
     status = models.PositiveSmallIntegerField(choices=CHOICES, default=0)
-    
+    accept_id = models.IntegerField(default=0)
+
     @property
     def total_price(self):
         return self.item.price * self.item_count

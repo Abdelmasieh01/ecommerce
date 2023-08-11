@@ -1,11 +1,21 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework import status
 import json
 import requests
+import hmac
+import hashlib
+from flatdict import FlatDict
 from main.models import Order, Item
 
 # Create your views here.
+
+
 @login_required()
 def choose_payment(request, id):
     # if request.method == 'POST':
@@ -15,6 +25,7 @@ def choose_payment(request, id):
     #     elif method == 'phone':
     #         return redirect('payment:initiate-payment-mob', id=id)
     return render(request, 'payment/choose.html', {'id': id})
+
 
 @login_required()
 def initiate_payment_card(request, id):
@@ -29,6 +40,7 @@ def initiate_payment_card(request, id):
     card_iframe_url = f'https://accept.paymob.com/api/acceptance/iframes/778662?payment_token={payment_key}'
     return render(request, 'payment/payment-card.html', {'card_iframe_url': card_iframe_url})
 
+
 @login_required()
 def initiate_payment_mob(request, id):
     '''
@@ -41,7 +53,7 @@ def initiate_payment_mob(request, id):
             return redirect('payment:error')
         phone = request.POST.get('phone')
         token = request_payment_key(order, WALLET_INTEGRATION_ID)
-    
+
         json_body = {
             "source": {
                 "identifier": phone,
@@ -49,21 +61,22 @@ def initiate_payment_mob(request, id):
             },
             "payment_token": token
         }
-        response = requests.post('https://accept.paymob.com/api/acceptance/payments/pay', json=json_body)
+        response = requests.post(
+            'https://accept.paymob.com/api/acceptance/payments/pay', json=json_body)
 
         if response.status_code == 200:
             content = json.loads(response.content.decode())
-            try: 
+            try:
                 return redirect(content.get('redirect_url'))
             except:
                 return redirect('payment:error')
         else:
             return redirect('payment:error')
-    return render(request, 'payment/payment-mob.html', ) 
+    return render(request, 'payment/payment-mob.html', )
+
 
 def payment_error(request):
     return render(request, 'payment/payment-error.html', )
-
 
 
 def get_token() -> str:
@@ -107,6 +120,8 @@ def register_order(order: Order):
         'https://accept.paymob.com/api/ecommerce/orders', json=json_body)
     if response.status_code == 201:
         content = json.loads(response.content.decode())
+        order.accept_id = content['id']
+        order.save()
         return token, content['id']
     else:
         return redirect('payment:error')
@@ -144,8 +159,65 @@ def request_payment_key(order: Order, integration_id: int):
 
     response = requests.post(
         'https://accept.paymob.com/api/acceptance/payment_keys', json=json_body)
-    if response.status_code == 201:    
+    if response.status_code == 201:
         content = json.loads(response.content.decode())
         return content['token']
     else:
         return redirect('payment:error')
+
+
+class OrderStatus(APIView):
+    '''
+    Webhook to check and edit order status
+    '''
+    permission_classes = [AllowAny]
+
+    def verify_signature(self, received_signature: str, payload):
+        HMAC_KEY = settings.HMAC_KEY
+        HMAC_STRING_KEYS = [
+            "amount_cents", "created_at", "currency", "error_occured",
+            "has_parent_transaction", "obj.id", "integration_id", "is_3d_secure",
+            "is_auth", "is_capture", "is_refunded", "is_standalone_payment",
+            "is_voided", "order.id", "owner", "pending", "source_data.pan",
+            "source_data.sub_type", "source_data.type", "success"
+        ]
+        flat_payload = dict(FlatDict(payload['obj'], delimiter='.'))
+        hmac_string = ''.join(str(flat_payload[key]) for key in HMAC_STRING_KEYS).replace('False', 'false').replace('True', 'true')
+        calculated_signature = hmac.new(
+            HMAC_KEY.encode('utf-8'), 
+            hmac_string.encode('utf-8'),
+            hashlib.sha512
+        ).hexdigest()
+
+        if hmac.compare_digest(calculated_signature, received_signature):
+            return True
+        return False
+
+    @csrf_exempt
+    def post(self, request, *args, **kwargs):
+        payload = request.data
+        received_signature = request.query_params.get('hmac')
+        if not received_signature:
+            return Response(
+                {'detail': 'Permission Denied.'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        
+        is_valid = self.verify_signature(received_signature, payload)
+        if not is_valid:
+            return Response(
+                {'detail': 'Permission Denied.'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+    
+        order_accept_id = payload.get('obj', {}).get('order', {}).get('id')
+        order_success = payload.get('obj', {}).get('success')
+        order = get_object_or_404(Order, accept_id=order_accept_id)
+        if order_success:
+            order.status = Order.PAID
+            order.save()
+
+        return Response(
+            {'detail': 'Payment done successfully.'},
+            status=status.HTTP_202_ACCEPTED
+        )
