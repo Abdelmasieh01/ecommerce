@@ -11,7 +11,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'ecommerce-dj.onrender.com',
-    'localhost'
+    '6579-41-129-108-146.ngrok-free.app',
+    'localhost',
 ]
 
 
@@ -155,4 +156,7 @@ PAYMOB_API_KEY = config('PAYMOB_API_KEY')
 HMAC_KEY = config('HMAC')
 
 #CSRF Setting
-CSRF_TRUSTED_ORIGINS = ['https://ecommerce-dj.onrender.com/']
+CSRF_TRUSTED_ORIGINS = [
+    'https://ecommerce-dj.onrender.com/',
+    'https://6579-41-129-108-146.ngrok-free.app',    
+]

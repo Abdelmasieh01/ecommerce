@@ -12,5 +12,5 @@ urlpatterns = [
     path('pay-by-card/<int:id>/', views.initiate_payment_card, name='initiate-payment-card'),
     path('pay-by-mob/<int:id>/', views.initiate_payment_mob, name='initiate-payment-mob'),
     path('error/', views.payment_error, name='error'),
-    path('webhooks/', include(webhooks, 'webhooks'), namespace='webhooks'),
+    path('webhooks/', include((webhooks, 'webhooks'), namespace='webhooks')),
 ]   
